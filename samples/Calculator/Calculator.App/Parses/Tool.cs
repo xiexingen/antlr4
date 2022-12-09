@@ -10,16 +10,13 @@ namespace Calculator.App.Parses
         /// </summary>
         /// <param name="text">算式文本</param>
         /// <returns>计算值</returns>
-        public static string CalcValue(string text)
+        public static double CalcValue(string text)
         {
-            string reuslt = "";
-            var calcu = new CalculatorVisitor();
-            var l = GetAntlrLexer(text, typeof(CalculatorLexer));
-            var p = GetAntlrParser(l, typeof(CalculatorParser)) as CalculatorParser;
-            var ctx = p.expr();
-
-            reuslt = calcu.Visit(ctx).ToString();
-            return reuslt;
+            var calculatorVisitor = new CalculatorVisitor();
+            var lexer = GetAntlrLexer(text, typeof(CalculatorLexer));
+            var parser = GetAntlrParser(lexer, typeof(CalculatorParser)) as CalculatorParser;
+            var expression = parser?.expr();
+            return calculatorVisitor.Visit(expression);
         }
 
         /// <summary>
@@ -31,8 +28,7 @@ namespace Calculator.App.Parses
         public static Parser GetAntlrParser(Lexer lex, Type parserType)
         {
             var tokenstream = new CommonTokenStream(lex);
-            var parser = Activator.CreateInstance(parserType, tokenstream) as Parser;
-            return parser;
+            return Activator.CreateInstance(parserType, tokenstream) as Parser;
         }
         /// <summary>
         /// 获取 词法分析器
@@ -43,8 +39,7 @@ namespace Calculator.App.Parses
         public static Lexer GetAntlrLexer(string text, Type lexerType)
         {
             AntlrInputStream input = new AntlrInputStream(text);
-            var lex = Activator.CreateInstance(lexerType, input) as Lexer;
-            return lex;
+            return Activator.CreateInstance(lexerType, input) as Lexer;
         }
     }
 }
